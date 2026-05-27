@@ -1,0 +1,71 @@
+.barra_navegacion {
+  background: rgb(218, 201, 182);
+  padding: 10px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+}
+.barra_texto {
+  gap: 15px;
+  padding-left: 5px;
+  color: rgb(255, 255, 255)
+}
+.barra_texto .nav-link {
+  color: rgb(255, 255, 255);
+}
+.barra_navegacion .navbar-brand {
+  color: rgb(255, 255, 255);
+  padding-left: 15px;
+}
+.barra_busqueda {
+  gap: 8px;
+  padding: 8px;
+  padding-right: 20px;
+}
+.contenido_principal {
+  padding-top: 20px;
+  padding-bottom: 25px;
+}
+.Columnas_Principal{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn.btn-outline-success {
+  background-color: rgb(233, 221, 200);
+  color: rgb(0, 0, 0);
+}
+.btn.btn-outline-success:hover {
+  background-color: rgb(218, 201, 182);
+  color: rgb(0, 0, 0);
+}
+.login {
+  font-size: 25px;
+}
+img {
+  width: 100%;
+  height: 450px;
+  object-fit: cover;
+}
+p {
+  font-size: 18px;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+}
+.card {
+  margin: 15px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+  justify-content: left;
+}
+.card img {
+  height: 400px;
+}
+.Login_link {
+  color: rgb(0, 0, 0);
+  text-decoration: none;
+}
+.Carta_Registro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
