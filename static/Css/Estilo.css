@@ -1,5 +1,7 @@
+/* Principal */
+
 .barra_navegacion {
-  background: rgb(218, 201, 182);
+  background: #a063229f;
   padding: 10px;
   box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
 }
@@ -19,6 +21,8 @@
   gap: 8px;
   padding: 8px;
   padding-right: 20px;
+  align-items: center;
+  justify-content: center;
 }
 .contenido_principal {
   padding-top: 20px;
@@ -28,14 +32,6 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-}
-.btn.btn-outline-success {
-  background-color: rgb(233, 221, 200);
-  color: rgb(0, 0, 0);
-}
-.btn.btn-outline-success:hover {
-  background-color: rgb(218, 201, 182);
-  color: rgb(0, 0, 0);
 }
 .login {
   font-size: 25px;
@@ -62,10 +58,11 @@ p {
   color: rgb(0, 0, 0);
   text-decoration: none;
 }
-.Carta_Registro {
-  display: flex;
-  flex-direction: column;
+.Control{
+  width: 500px;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
 }
