@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <title>Panel Admin — Moda Total</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold:       #D89B5B;
+      --gold-dark:  #b87a3d;
+      --gold-faint: rgba(216,155,91,.18);
+      --card-bg:    rgba(0,0,0,0.72);
+      --card-border:rgba(255,255,255,.08);
+      --text-muted: rgba(255,255,255,.5);
+      --text-main:  rgba(255,255,255,.88);
+      --sidebar-w:  250px;
+      --topbar-h:   60px;
+      --green: #1cc88a;
+      --red:   #e74a3b;
+      --teal:  #36b9cc;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #1a1209;
+      background-image: url("/static/Imagenes/Registro_Login.png");
+      background-size: cover; background-attachment: fixed;
+      min-height: 100vh; color: var(--text-main);
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed; top: 0; left: 0;
+      width: var(--sidebar-w); height: 100vh;
+      background: rgba(0,0,0,.82);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(216,155,91,.15);
+      display: flex; flex-direction: column;
+      z-index: 200; overflow-y: auto;
+    }
+    .sidebar-brand {
+      padding: 22px 24px 18px;
+      border-bottom: 1px solid rgba(216,155,91,.2);
+    }
+    .sidebar-brand .brand-name {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold); font-size: 1.15rem;
+      display: flex; align-items: center; gap: 9px; text-decoration: none;
+    }
+    .sidebar-brand .brand-sub {
+      font-size: .7rem; color: var(--text-muted);
+      margin-top: 2px; margin-left: 30px;
+    }
+    .sidebar-section-label {
+      padding: 18px 22px 6px;
+      font-size: .68rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1.2px;
+      color: rgba(216,155,91,.45);
+    }
+    .nav-link-admin {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 22px; font-size: .83rem;
+      color: rgba(255,255,255,.6); text-decoration: none;
+      border: none; background: none; width: 100%;
+      text-align: left; cursor: pointer;
+      border-left: 3px solid transparent; transition: all .18s;
+    }
+    .nav-link-admin i { font-size: 1rem; width: 18px; text-align: center; }
+    .nav-link-admin:hover { color: var(--gold); background: rgba(216,155,91,.07); }
+    .nav-link-admin.active { color: var(--gold); background: rgba(216,155,91,.12); border-left-color: var(--gold); }
+    .sidebar-footer {
+      margin-top: auto; padding: 18px 22px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      font-size: .75rem; color: var(--text-muted);
+    }
+
+    /* TOPBAR */
+    .topbar {
+      position: fixed; top: 0;
+      left: var(--sidebar-w); right: 0;
+      height: var(--topbar-h);
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(216,155,91,.15);
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0 28px; z-index: 150;
+    }
+    .topbar-search {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px; padding: 7px 14px; width: 240px;
+    }
+    .topbar-search input {
+      border: none; background: none; outline: none;
+      font-size: .82rem; color: white; width: 100%;
+      font-family: 'Poppins', sans-serif;
+    }
+    .topbar-search input::placeholder { color: rgba(255,255,255,.35); }
+    .topbar-right { display: flex; align-items: center; gap: 18px; }
+    .topbar-icon {
+      position: relative; cursor: pointer;
+      color: rgba(255,255,255,.6); font-size: 1.15rem; transition: color .15s;
+    }
+    .topbar-icon:hover { color: var(--gold); }
+    .top-badge {
+      position: absolute; top: -5px; right: -7px;
+      background: var(--red); color: #fff;
+      font-size: 9px; font-weight: 700;
+      width: 16px; height: 16px; border-radius: 50%;
+      display: grid; place-items: center;
+    }
+    .topbar-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--gold-faint);
+      border: 1.5px solid rgba(216,155,91,.5);
+      display: grid; place-items: center;
+      color: var(--gold); font-size: 1.1rem; cursor: pointer;
+    }
+
+    /* MAIN */
+    .main-content {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--topbar-h);
+      padding: 28px 30px 60px;
+      min-height: calc(100vh - var(--topbar-h));
+    }
+
+    /* PAGE HEADER */
+    .page-header { margin-bottom: 26px; }
+    .page-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; color: var(--gold); margin-bottom: 2px;
+    }
+    .page-header p { font-size: .8rem; color: var(--text-muted); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* KPI CARDS */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 18px; margin-bottom: 22px;
+    }
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 20px 22px;
+      display: flex; justify-content: space-between; align-items: center;
+      backdrop-filter: blur(8px);
+      border-left: 4px solid var(--gold);
+      transition: transform .2s;
+    }
+    .kpi-card:hover { transform: translateY(-2px); }
+    .kpi-card.kpi-green { border-left-color: var(--green); }
+    .kpi-card.kpi-teal  { border-left-color: var(--teal); }
+    .kpi-card.kpi-red   { border-left-color: var(--red); }
+    .kpi-label {
+      font-size: .68rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .8px; margin-bottom: 5px; color: var(--gold);
+    }
+    .kpi-card.kpi-green .kpi-label { color: var(--green); }
+    .kpi-card.kpi-teal  .kpi-label { color: var(--teal); }
+    .kpi-card.kpi-red   .kpi-label { color: var(--red); }
+    .kpi-value {
+      font-size: 1.5rem; font-weight: 700; color: white;
+      font-family: 'Playfair Display', serif;
+    }
+    .kpi-icon { font-size: 1.8rem; opacity: .2; }
+
+    /* CHART ROWS */
+    .chart-row {
+      display: grid; grid-template-columns: 2fr 1fr;
+      gap: 18px; margin-bottom: 22px;
+    }
+    .bottom-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 18px; margin-bottom: 22px;
+    }
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 22px 24px;
+      backdrop-filter: blur(8px);
+    }
+    .glass-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; color: var(--gold); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .chart-area { height: 210px; position: relative; }
+    .donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .donut-legend { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .legend-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; }
+    .legend-item { font-size: .75rem; color: var(--text-muted); }
+
+    /* PROGRESS */
+    .progress-list { display: flex; flex-direction: column; gap: 16px; }
+    .progress-meta { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: .8rem; }
+    .prog-bar { height: 7px; background: rgba(255,255,255,.1); border-radius: 99px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 99px; }
+
+    /* TABLE */
+    .table-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px; overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+    .table-toolbar {
+      padding: 18px 22px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .table-toolbar-title {
+      font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1rem;
+    }
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table thead { background: rgba(216,155,91,.1); }
+    .admin-table th {
+      padding: 12px 16px; text-align: left;
+      font-size: .7rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .7px;
+      color: var(--gold); border-bottom: 1px solid rgba(216,155,91,.2);
+    }
+    .admin-table td {
+      padding: 13px 16px; font-size: .82rem;
+      border-top: 1px solid rgba(255,255,255,.06);
+      color: var(--text-main); vertical-align: middle;
+    }
+    .admin-table tr:hover td { background: rgba(255,255,255,.03); }
+    .prod-thumb {
+      width: 42px; height: 42px; border-radius: 8px;
+      border: 1px solid rgba(216,155,91,.3);
+      background: rgba(255,255,255,.05);
+      display: grid; place-items: center; font-size: 1.3rem;
+    }
+    .prod-name { font-weight: 500; color: white; }
+    .badge-cat {
+      background: rgba(216,155,91,.2); color: var(--gold);
+      border: 1px solid rgba(216,155,91,.35);
+      border-radius: 20px; padding: 2px 10px; font-size: .7rem;
+    }
+    .badge-active {
+      background: rgba(28,200,138,.15); color: #1cc88a;
+      border: 1px solid rgba(28,200,138,.3);
+      border-radius: 20px; padding: 2px 10px; font-size: .7rem;
+    }
+    .badge-inactive {
+      background: rgba(231,74,59,.15); color: #e74a3b;
+      border: 1px solid rgba(231,74,59,.3);
+      border-radius: 20px; padding: 2px 10px; font-size: .7rem;
+    }
+
+    /* BUTTONS */
+    .btn-admin {
+      background: var(--gold); border: none; color: white;
+      font-weight: 500; padding: 9px 22px; border-radius: 9px;
+      font-family: 'Poppins', sans-serif; font-size: .83rem;
+      cursor: pointer; transition: background .2s, transform .1s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-admin:hover { background: var(--gold-dark); }
+    .btn-admin:active { transform: scale(.97); }
+    .btn-sm-edit {
+      background: rgba(216,155,91,.15); border: 1px solid rgba(216,155,91,.35);
+      color: var(--gold); font-size: .73rem; padding: 4px 11px; border-radius: 6px;
+      cursor: pointer; transition: background .15s; font-family: 'Poppins', sans-serif;
+    }
+    .btn-sm-edit:hover { background: rgba(216,155,91,.3); }
+    .btn-sm-del {
+      background: rgba(220,53,69,.15); border: 1px solid rgba(220,53,69,.35);
+      color: #e74a3b; font-size: .73rem; padding: 4px 11px; border-radius: 6px;
+      cursor: pointer; transition: background .15s; font-family: 'Poppins', sans-serif;
+      margin-left: 6px;
+    }
+    .btn-sm-del:hover { background: rgba(220,53,69,.3); }
+
+    /* ADD FORM */
+    .add-card {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 28px 30px;
+      backdrop-filter: blur(8px); margin-bottom: 22px;
+    }
+    .add-card h4 {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold); margin-bottom: 4px; font-size: 1.1rem;
+    }
+    .add-card .sub { color: var(--text-muted); font-size: .78rem; margin-bottom: 20px; }
+    .form-label-admin { color: rgba(255,255,255,.75); font-size: .78rem; margin-bottom: 4px; display: block; }
+    .form-ctrl {
+      width: 100%; padding: 9px 13px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 8px; color: white;
+      font-family: 'Poppins', sans-serif; font-size: .83rem;
+      outline: none; transition: border-color .15s;
+    }
+    .form-ctrl::placeholder { color: rgba(255,255,255,.3); }
+    .form-ctrl:focus { border-color: var(--gold); background: rgba(255,255,255,.1); }
+    .form-ctrl option { background: #1a1209; }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.65); z-index: 400;
+      display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: rgba(15,10,5,.95);
+      border: 1px solid rgba(216,155,91,.3);
+      border-radius: 16px; padding: 30px; width: 480px; max-width: 95vw;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    .modal-header-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 22px;
+    }
+    .modal-header-row h5 {
+      font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem;
+    }
+    .modal-close-btn {
+      background: none; border: none; color: rgba(255,255,255,.5);
+      font-size: 1.2rem; cursor: pointer; transition: color .15s;
+    }
+    .modal-close-btn:hover { color: var(--gold); }
+
+    /* ALERT */
+    .alerta-ok {
+      background: rgba(28,200,138,.15);
+      border: 1px solid rgba(28,200,138,.35);
+      color: #90ee90; border-radius: 8px;
+      padding: 9px 14px; font-size: .8rem; margin-bottom: 16px;
+    }
+
+    /* TOAST */
+    .toast-custom {
+      position: fixed; bottom: 28px; right: 28px;
+      background: rgba(0,0,0,.9); border: 1px solid rgba(216,155,91,.4);
+      color: white; padding: 12px 20px; border-radius: 10px;
+      font-size: .82rem; font-weight: 500;
+      transform: translateY(80px); opacity: 0;
+      transition: all .3s; z-index: 500;
+    }
+    .toast-custom.show { transform: translateY(0); opacity: 1; }
+    .toast-custom.t-success { border-color: rgba(28,200,138,.5); }
+    .toast-custom.t-error   { border-color: rgba(231,74,59,.5); }
+
+    /* EMPTY */
+    .empty-state { text-align: center; padding: 38px; color: rgba(255,255,255,.3); font-size: .85rem; }
+    .empty-state i { font-size: 2.5rem; display: block; margin-bottom: 10px; color: rgba(216,155,91,.25); }
+
+    /* RECENT MINI */
+    .mini-product {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .mini-product:last-child { border-bottom: none; }
+    .mini-left { display: flex; align-items: center; gap: 10px; }
+    .mini-name { font-size: .82rem; font-weight: 500; }
+    .mini-cat  { font-size: .7rem; color: var(--text-muted); }
+    .mini-price { color: var(--gold); font-weight: 600; font-size: .85rem; }
+
+    @media (max-width: 1000px) {
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .chart-row, .bottom-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
+      .sidebar { transform: translateX(-100%); }
+      .main-content { margin-left: 0; }
+      .topbar { left: 0; }
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <a href="/" class="brand-name">
+      <i class="bi bi-shield-lock-fill"></i> Moda Total
+    </a>
+    <div class="brand-sub">Panel de Administración</div>
+  </div>
+
+  <div class="sidebar-section-label">Principal</div>
+  <button class="nav-link-admin active" onclick="showSection('dashboard', this)">
+    <i class="bi bi-grid-1x2-fill"></i> Dashboard
+  </button>
+
+  <div class="sidebar-section-label">Gestión</div>
+  <button class="nav-link-admin" onclick="showSection('agregar', this)">
+    <i class="bi bi-plus-circle-fill"></i> Agregar Producto
+  </button>
+  <button class="nav-link-admin" onclick="showSection('productos', this)">
+    <i class="bi bi-box-seam-fill"></i> Ver Productos
+  </button>
+
+  <div class="sidebar-section-label">Tienda</div>
+  <button class="nav-link-admin" onclick="window.location.href='/'">
+    <i class="bi bi-house-fill"></i> Ir al Inicio
+  </button>
+  <button class="nav-link-admin" onclick="window.location.href='/tienda'">
+    <i class="bi bi-shop"></i> Ver Tienda
+  </button>
+  <div class="sidebar-footer">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div style="width:34px;height:34px;background:var(--gold-faint);border:1.5px solid rgba(216,155,91,.4);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:.95rem">
+        <i class="bi bi-person-gear"></i>
+      </div>
+      <div>
+        <div style="font-size:.78rem;color:white;font-weight:500">{{ usuario }}</div>
+        <div style="font-size:.68rem;color:var(--text-muted)">Administrador</div>
+      </div>
+    </div>
+    <a href="/cerrar_sesion" style="color:rgba(231,74,59,.7);font-size:.75rem;text-decoration:none">
+      <i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión
+    </a>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-search">
+    <i class="bi bi-search" style="color:rgba(255,255,255,.3)"></i>
+    <input type="text" placeholder="Buscar productos..." oninput="if(currentSection==='productos') filterTable(this.value)">
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-icon"><i class="bi bi-bell-fill"></i><span class="top-badge">3</span></div>
+    <div class="topbar-icon"><i class="bi bi-envelope-fill"></i><span class="top-badge">5</span></div>
+    <div class="topbar-avatar"><i class="bi bi-person-fill"></i></div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main-content">
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="section active">
+    <div class="page-header d-flex justify-content-between align-items-start" style="flex-wrap:wrap;gap:12px">
+      <div>
+        <h2><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</h2>
+        <p>Bienvenido al panel de control de Moda Total</p>
+      </div>
+      <button class="btn-admin" onclick="showSection('agregar', document.querySelectorAll('.nav-link-admin')[1])">
+        <i class="bi bi-plus-lg"></i> Nuevo Producto
+      </button>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div>
+          <div class="kpi-label">Ingresos Mensuales</div>
+          <div class="kpi-value">S/ 8,400</div>
+        </div>
+        <div class="kpi-icon" style="color:var(--gold)"><i class="bi bi-currency-dollar"></i></div>
+      </div>
+      <div class="kpi-card kpi-green">
+        <div>
+          <div class="kpi-label">Ingresos Anuales</div>
+          <div class="kpi-value">S/ 98,500</div>
+        </div>
+        <div class="kpi-icon" style="color:var(--green)"><i class="bi bi-graph-up-arrow"></i></div>
+      </div>
+      <div class="kpi-card kpi-teal">
+        <div>
+          <div class="kpi-label">Pedidos Activos</div>
+          <div class="kpi-value" id="kpiPedidos">24</div>
+        </div>
+        <div class="kpi-icon" style="color:var(--teal)"><i class="bi bi-bag-check-fill"></i></div>
+      </div>
+      <div class="kpi-card kpi-red">
+        <div>
+          <div class="kpi-label">Productos Publicados</div>
+          <div class="kpi-value" id="kpiProductos">5</div>
+        </div>
+        <div class="kpi-icon" style="color:var(--red)"><i class="bi bi-box-seam-fill"></i></div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="chart-row">
+      <div class="glass-card">
+        <div class="glass-card-title"><i class="bi bi-graph-up"></i> Resumen de Ventas</div>
+        <div class="chart-area"><canvas id="salesChart"></canvas></div>
+      </div>
+      <div class="glass-card">
+        <div class="glass-card-title"><i class="bi bi-pie-chart-fill"></i> Por Categoría</div>
+        <div class="donut-wrap" style="margin-top:10px">
+          <canvas id="donutChart" style="max-height:165px"></canvas>
+          <div class="donut-legend">
+            <span class="legend-item"><span class="legend-dot" style="background:var(--gold)"></span>Polos</span>
+            <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Camisas</span>
+            <span class="legend-item"><span class="legend-dot" style="background:var(--teal)"></span>Chalecos</span>
+            <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Otros</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="bottom-row">
+      <div class="glass-card">
+        <div class="glass-card-title"><i class="bi bi-list-task"></i> Estado de Proyectos</div>
+        <div class="progress-list">
+          <div>
+            <div class="progress-meta"><span>Migración de Servidor</span><span style="color:var(--red)">20%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:20%;background:var(--red)"></div></div>
+          </div>
+          <div>
+            <div class="progress-meta"><span>Seguimiento de Ventas</span><span style="color:#f6c23e">40%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:40%;background:#f6c23e"></div></div>
+          </div>
+          <div>
+            <div class="progress-meta"><span>Base de Clientes</span><span style="color:var(--teal)">60%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:60%;background:var(--teal)"></div></div>
+          </div>
+          <div>
+            <div class="progress-meta"><span>Catálogo de Productos</span><span style="color:var(--gold)">80%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:80%;background:var(--gold)"></div></div>
+          </div>
+          <div>
+            <div class="progress-meta"><span>Configuración de Pagos</span><span style="color:var(--green)">Completo</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="glass-card-title"><i class="bi bi-clock-history"></i> Productos Recientes</div>
+        <div id="dashRecent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGREGAR PRODUCTO -->
+  <div id="agregar" class="section">
+    <div class="page-header">
+      <h2><i class="bi bi-plus-circle-fill me-2"></i>Agregar Producto</h2>
+      <p>Publica un nuevo artículo en la tienda</p>
+    </div>
+    <div class="add-card">
+      <h4><i class="bi bi-cloud-upload me-2"></i>Nuevo Producto</h4>
+      <p class="sub">Completa todos los campos para publicar el producto en la tienda</p>
+      <div id="addAlerta" style="display:none"></div>
+      {% if mensaje %}
+      <div class="alerta-ok"><i class="bi bi-check-circle-fill me-2"></i>{{ mensaje }}</div>
+      {% endif %}
+      <form action="/admin/agregar" method="POST" enctype="multipart/form-data" id="addForm">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label-admin">Nombre del producto *</label>
+            <input type="text" name="nombre" id="pName" class="form-ctrl" placeholder="Ej: Polo Clásico Blanco" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-admin">Categoría *</label>
+            <select name="categoria" id="pCategory" class="form-ctrl" required>
+              <option value="" disabled selected>Seleccionar...</option>
+              <option value="Polo">Polo</option>
+              <option value="Camisa">Camisa</option>
+              <option value="Chaleco">Chaleco</option>
+              <option value="Clásico">Clásico</option>
+              <option value="Urbano">Urbano</option>
+              <option value="Minimalista">Minimalista</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label-admin">Descripción</label>
+            <input type="text" name="descripcion" class="form-ctrl" placeholder="Breve descripción del producto">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-admin">Precio (S/) *</label>
+            <input type="number" name="precio" step="0.01" min="0" class="form-ctrl" placeholder="0.00" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-admin">Stock</label>
+            <input type="number" name="stock" min="0" class="form-ctrl" placeholder="0">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-admin">Estado</label>
+            <select name="estado" class="form-ctrl">
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label-admin">Imagen del producto *</label>
+            <input type="file" name="imagen" class="form-ctrl" accept="image/*" required style="padding:6px 13px">
+          </div>
+          <div class="col-12 d-flex justify-content-end gap-2">
+            <button type="button" class="btn-sm-edit" style="padding:9px 20px;font-size:.83rem" onclick="resetForm()">
+              <i class="bi bi-arrow-counterclockwise"></i> Limpiar
+            </button>
+            <button type="submit" class="btn-admin">
+              <i class="bi bi-cloud-upload"></i> Publicar Producto
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VER PRODUCTOS -->
+  <div id="productos" class="section">
+    <div class="page-header d-flex justify-content-between align-items-start" style="flex-wrap:wrap;gap:12px">
+      <div>
+        <h2><i class="bi bi-box-seam-fill me-2"></i>Productos Publicados</h2>
+        <p>Gestiona todos los productos de la tienda</p>
+      </div>
+      <button class="btn-admin" onclick="showSection('agregar', document.querySelectorAll('.nav-link-admin')[1])">
+        <i class="bi bi-plus-lg"></i> Agregar Producto
+      </button>
+    </div>
+
+    <div class="table-card">
+      <div class="table-toolbar">
+        <span class="table-toolbar-title">
+          <i class="bi bi-box-seam me-2"></i>Catálogo
+          <span id="totalCount" style="font-size:.75rem;color:var(--text-muted);margin-left:6px"></span>
+        </span>
+        <input class="form-ctrl" style="width:220px;padding:7px 12px" placeholder="🔍 Buscar..." oninput="filterTable(this.value)">
+      </div>
+      <div style="overflow-x:auto">
+        <table class="admin-table" id="adminTable">
+          <thead>
+            <tr>
+              <th>#</th><th>Producto</th><th>Categoría</th>
+              <th>Descripción</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody">
+            {% for p in productos %}
+            <tr>
+              <td style="color:var(--text-muted);font-size:.73rem">#{{ p['id'] }}</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="prod-thumb">
+                    <img src="{{ get_imagen_url(p['imagen']) }}" alt="{{ p['nombre'] }}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.style.display='none';this.parentElement.innerHTML='👕'">
+                  </div>
+                  <div class="prod-name">{{ p['nombre'] }}</div>
+                </div>
+              </td>
+              <td><span class="badge-cat">{{ p['categoria'] }}</span></td>
+              <td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted)">{{ p['descripcion'] }}</td>
+              <td style="color:var(--gold);font-weight:600">S/ {{ "%.2f"|format(p['precio']) }}</td>
+              <td>{{ p.get('stock', '—') }}</td>
+              <td>
+                {% set estado = p.get('estado', 'Activo') %}
+                <span class="{{ 'badge-active' if estado == 'Activo' else 'badge-inactive' }}">{{ estado }}</span>
+              </td>
+              <td>
+                <button class="btn-sm-edit"><i class="bi bi-pencil"></i> Editar</button>
+                <form action="/admin/eliminar/{{ p['id'] }}" method="POST" style="display:inline">
+                  <button type="submit" class="btn-sm-del" onclick="return confirm('¿Eliminar este producto?')">
+                    <i class="bi bi-trash3"></i> Eliminar
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if not productos %}
+        <div class="empty-state"><i class="bi bi-inbox"></i>No hay productos aún. ¡Agrega el primero!</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL EDITAR -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box">
+    <div class="modal-header-row">
+      <h5><i class="bi bi-pencil-square me-2"></i>Editar Producto</h5>
+      <button class="modal-close-btn" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label-admin">Nombre *</label>
+        <input type="text" id="eName" class="form-ctrl">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label-admin">Categoría *</label>
+        <select id="eCategory" class="form-ctrl">
+          <option value="Polo">Polo</option>
+          <option value="Camisa">Camisa</option>
+          <option value="Chaleco">Chaleco</option>
+          <option value="Clásico">Clásico</option>
+          <option value="Urbano">Urbano</option>
+          <option value="Minimalista">Minimalista</option>
+        </select>
+      </div>
+      <div class="col-12">
+        <label class="form-label-admin">Descripción</label>
+        <input type="text" id="eDesc" class="form-ctrl">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label-admin">Precio (S/) *</label>
+        <input type="number" id="ePrice" step="0.01" min="0" class="form-ctrl">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label-admin">Stock</label>
+        <input type="number" id="eStock" min="0" class="form-ctrl">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label-admin">Estado</label>
+        <select id="eStatus" class="form-ctrl">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px">
+      <button class="btn-sm-edit" style="padding:8px 20px;font-size:.82rem" onclick="closeModal()">Cancelar</button>
+      <button class="btn-admin" onclick="saveEdit()"><i class="bi bi-check-lg"></i> Guardar Cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-custom" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+/* DATA (demo — en producción Flask renderiza la tabla con Jinja) */
+let localProducts = [
+  { id:1, name:'Polo Clásico Blanco',  category:'Polo',    desc:'Algodón premium, ideal para el día a día.',    price:59.90, stock:120, status:'Activo',   emoji:'👕' },
+  { id:2, name:'Camisa Denim Azul',    category:'Camisa',  desc:'Mezclilla con acabados premium.',               price:89.90, stock:45,  status:'Activo',   emoji:'👔' },
+  { id:3, name:'Chaleco Urbano Gris',  category:'Chaleco', desc:'Perfecto para complementar cualquier outfit.', price:79.90, stock:30,  status:'Activo',   emoji:'🧥' },
+  { id:4, name:'Polo Urbano Negro',    category:'Polo',    desc:'Corte moderno con detalle en mangas.',         price:64.90, stock:0,   status:'Inactivo', emoji:'👕' },
+  { id:5, name:'Camisa Lino Blanca',   category:'Camisa',  desc:'Ligera y fresca, ideal para el verano.',       price:79.90, stock:80,  status:'Activo',   emoji:'👔' },
+];
+let nextId = 6, editingId = null, currentSection = 'dashboard';
+
+/* NAVIGATION */
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-link-admin').forEach(n => n.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  currentSection = id;
+  if (id === 'productos') renderLocalTable(localProducts);
+  if (id === 'dashboard') { renderDashRecent(); updateKpis(); }
+}
+
+/* KPIs */
+function updateKpis() {
+  document.getElementById('kpiProductos').textContent = localProducts.length;
+}
+
+/* DASHBOARD RECENT */
+function renderDashRecent() {
+  const el = document.getElementById('dashRecent');
+  if (!localProducts.length) {
+    el.innerHTML = '<div class="empty-state"><i class="bi bi-inbox"></i>Sin productos.</div>';
+    return;
+  }
+  el.innerHTML = localProducts.slice(0,5).map(p => `
+    <div class="mini-product">
+      <div class="mini-left">
+        <span style="font-size:1.3rem">${p.emoji}</span>
+        <div>
+          <div class="mini-name">${p.name}</div>
+          <div class="mini-cat">${p.category}</div>
+        </div>
+      </div>
+      <span class="mini-price">S/ ${p.price.toFixed(2)}</span>
+    </div>`).join('');
+}
+
+/* LOCAL TABLE (demo) */
+function renderLocalTable(data) {
+  const tbody = document.getElementById('adminTableBody');
+  if (!tbody) return;
+  document.getElementById('totalCount').textContent = `(${localProducts.length} producto${localProducts.length!==1?'s':''})`;
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="bi bi-search"></i>Sin resultados.</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(p => `
+    <tr>
+      <td style="color:var(--text-muted);font-size:.73rem">#${p.id}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="prod-thumb">${p.emoji}</div>
+          <div class="prod-name">${p.name}</div>
+        </div>
+      </td>
+      <td><span class="badge-cat">${p.category}</span></td>
+      <td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-muted)">${p.desc}</td>
+      <td style="color:var(--gold);font-weight:600">S/ ${p.price.toFixed(2)}</td>
+      <td>${p.stock > 0 ? p.stock : '<span style="color:var(--red);font-size:.75rem">Agotado</span>'}</td>
+      <td><span class="${p.status==='Activo'?'badge-active':'badge-inactive'}">${p.status}</span></td>
+      <td>
+        <button class="btn-sm-edit" onclick="openEdit(${p.id})"><i class="bi bi-pencil"></i> Editar</button>
+        <button class="btn-sm-del" onclick="delLocal(${p.id})"><i class="bi bi-trash3"></i> Eliminar</button>
+      </td>
+    </tr>`).join('');
+}
+
+function filterTable(q) {
+  const f = localProducts.filter(p =>
+    p.name.toLowerCase().includes(q.toLowerCase()) ||
+    p.category.toLowerCase().includes(q.toLowerCase())
+  );
+  renderLocalTable(f);
+}
+
+/* EDIT */
+function openEdit(id) {
+  editingId = id;
+  const p = localProducts.find(x => x.id === id);
+  document.getElementById('eName').value     = p.name;
+  document.getElementById('eCategory').value = p.category;
+  document.getElementById('eDesc').value     = p.desc;
+  document.getElementById('ePrice').value    = p.price;
+  document.getElementById('eStock').value    = p.stock;
+  document.getElementById('eStatus').value   = p.status;
+  document.getElementById('editModal').classList.add('open');
+}
+function closeModal() { document.getElementById('editModal').classList.remove('open'); editingId = null; }
+function saveEdit() {
+  const emojis = { Polo:'👕', Camisa:'👔', Chaleco:'🧥', Clásico:'🎩', Urbano:'🧢', Minimalista:'🤍' };
+  const cat = document.getElementById('eCategory').value;
+  const i = localProducts.findIndex(p => p.id === editingId);
+  localProducts[i] = { ...localProducts[i],
+    name: document.getElementById('eName').value.trim(),
+    category: cat, desc: document.getElementById('eDesc').value.trim(),
+    price: parseFloat(document.getElementById('ePrice').value),
+    stock: parseInt(document.getElementById('eStock').value)||0,
+    status: document.getElementById('eStatus').value,
+    emoji: emojis[cat]||'📦'
+  };
+  closeModal(); renderLocalTable(localProducts); showToast('Producto actualizado ✓', 'success');
+  renderDashRecent(); updateKpis();
+}
+
+/* DELETE */
+function delLocal(id) {
+  if (!confirm('¿Eliminar este producto?')) return;
+  localProducts = localProducts.filter(p => p.id !== id);
+  renderLocalTable(localProducts); showToast('Producto eliminado', 'error');
+  renderDashRecent(); updateKpis();
+}
+
+/* FORM RESET */
+function resetForm() {
+  document.getElementById('addForm').reset();
+  document.getElementById('addAlerta').style.display = 'none';
+}
+
+/* TOAST */
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast-custom show t-' + type;
+  setTimeout(() => t.className = 'toast-custom', 2800);
+}
+
+/* CHARTS */
+window.addEventListener('DOMContentLoaded', () => {
+  updateKpis(); renderDashRecent();
+
+  new Chart(document.getElementById('salesChart'), {
+    type: 'line',
+    data: {
+      labels: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+      datasets: [{
+        label: 'Ventas (S/)',
+        data: [3200,4800,4100,6200,5500,7800,8200,7600,9100,10200,9400,12400],
+        borderColor: '#D89B5B', backgroundColor: 'rgba(216,155,91,.08)',
+        tension: .4, fill: true, pointRadius: 4,
+        pointBackgroundColor: '#D89B5B',
+        pointBorderColor: 'rgba(0,0,0,.5)', pointBorderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: 'rgba(255,255,255,.4)', callback: v => 'S/'+v.toLocaleString() } },
+        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,.4)' } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('donutChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Polos','Camisas','Chalecos','Otros'],
+      datasets: [{ data: [38,30,20,12], backgroundColor: ['#D89B5B','#1cc88a','#36b9cc','#e74a3b'], borderWidth: 0 }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, cutout: '68%' }
+  });
+});
+
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>

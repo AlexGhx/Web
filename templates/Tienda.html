@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/Css/Estilo.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Tienda - Tienda De Ropa</title>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg barra_navegacion sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Tienda De Ropa</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav barra_texto me-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/tienda">Tienda</a></li>
+          <li class="nav-item"><a class="nav-link" href="/#contacto" onclick="irContacto(event)">Contáctanos</a></li>
+        </ul>
+      </div>
+      <form class="d-flex barra_busqueda me-2" role="search" onsubmit="filtrarPorBusqueda(event)">
+        <input class="form-control me-2" type="search" id="searchBar" placeholder="Buscar productos..." />
+        <button class="btn btn-buscar" type="submit"><i class="bi bi-search"></i></button>
+      </form>
+      <a href="/carrito" class="nav-icon-link me-2 position-relative" title="Carrito">
+        <i class="bi bi-cart3 nav-icon"></i>
+        <span class="cart-badge" id="cartCount">0</span>
+      </a>
+      <a href="/login" class="nav-icon-link" title="Mi cuenta">
+        <i class="bi bi-person nav-icon"></i>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ENCABEZADO TIENDA -->
+  <div class="tienda-header">
+    <h1 class="tienda-titulo">Nuestra Tienda</h1>
+    <p class="tienda-sub">Encuentra tu estilo perfecto</p>
+  </div>
+
+  <div class="container-fluid mt-4">
+    <div class="row">
+
+      <!-- SIDEBAR FILTROS -->
+      <aside class="col-lg-3 col-md-4 mb-4">
+        <div class="filtros-card">
+          <h5 class="filtros-titulo"><i class="bi bi-funnel-fill me-2"></i>Filtros</h5>
+          <hr>
+
+          <!-- Búsqueda por nombre -->
+          <div class="filtro-grupo">
+            <label class="filtro-label">Buscar por nombre</label>
+            <div class="input-group input-group-sm">
+              <input type="text" id="filtroNombre" class="form-control" placeholder="Nombre del producto..." oninput="aplicarFiltros()">
+              <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('filtroNombre').value=''; aplicarFiltros()">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Categoría -->
+          <div class="filtro-grupo">
+            <label class="filtro-label">Categoría</label>
+            <div class="filtro-opciones">
+              <div class="form-check filtro-check">
+                <input class="form-check-input" type="checkbox" value="todos" id="cat-todos" checked onchange="toggleTodos(this)">
+                <label class="form-check-label" for="cat-todos">Todos</label>
+              </div>
+              <div class="form-check filtro-check">
+                <input class="form-check-input" type="checkbox" value="polos" id="cat-polos" onchange="aplicarFiltros()">
+                <label class="form-check-label" for="cat-polos"><i class="bi bi-person-arms-up me-1"></i>Polos</label>
+              </div>
+              <div class="form-check filtro-check">
+                <input class="form-check-input" type="checkbox" value="camisas" id="cat-camisas" onchange="aplicarFiltros()">
+                <label class="form-check-label" for="cat-camisas"><i class="bi bi-person me-1"></i>Camisas</label>
+              </div>
+              <div class="form-check filtro-check">
+                <input class="form-check-input" type="checkbox" value="chalecos" id="cat-chalecos" onchange="aplicarFiltros()">
+                <label class="form-check-label" for="cat-chalecos"><i class="bi bi-box me-1"></i>Chalecos</label>
+              </div>
+              <div class="form-check filtro-check">
+                <input class="form-check-input" type="checkbox" value="pantalones" id="cat-pantalones" onchange="aplicarFiltros()">
+                <label class="form-check-label" for="cat-pantalones"><i class="bi bi-bag me-1"></i>Pantalones</label>
+              </div>
+              <div class="form-check filtro-check">
+                <input class="form-check-input" type="checkbox" value="accesorios" id="cat-accesorios" onchange="aplicarFiltros()">
+                <label class="form-check-label" for="cat-accesorios"><i class="bi bi-gem me-1"></i>Accesorios</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estilo -->
+          <div class="filtro-grupo">
+            <label class="filtro-label">Estilo</label>
+            <select class="form-select form-select-sm" id="filtroEstilo" onchange="aplicarFiltros()">
+              <option value="">Todos los estilos</option>
+              <option value="clasico">Clásico</option>
+              <option value="urbano">Urbano</option>
+              <option value="minimalista">Minimalista</option>
+            </select>
+          </div>
+
+          <!-- Precio -->
+          <div class="filtro-grupo">
+            <label class="filtro-label">Precio máximo: <strong id="precioVal">S/ 200</strong></label>
+            <input type="range" class="form-range filtro-range" id="filtroPrecio" min="20" max="200" value="200" step="5" oninput="actualizarPrecio(this.value)">
+            <div class="d-flex justify-content-between" style="font-size:11px; color:#999;">
+              <span>S/ 20</span><span>S/ 200</span>
+            </div>
+          </div>
+
+          <!-- Talla -->
+          <div class="filtro-grupo">
+            <label class="filtro-label">Talla</label>
+            <div class="tallas-grid">
+              <button class="talla-btn" onclick="toggleTalla(this)" data-talla="XS">XS</button>
+              <button class="talla-btn" onclick="toggleTalla(this)" data-talla="S">S</button>
+              <button class="talla-btn" onclick="toggleTalla(this)" data-talla="M">M</button>
+              <button class="talla-btn" onclick="toggleTalla(this)" data-talla="L">L</button>
+              <button class="talla-btn" onclick="toggleTalla(this)" data-talla="XL">XL</button>
+              <button class="talla-btn" onclick="toggleTalla(this)" data-talla="XXL">XXL</button>
+            </div>
+          </div>
+
+          <!-- Ordenar -->
+          <div class="filtro-grupo">
+            <label class="filtro-label">Ordenar por</label>
+            <select class="form-select form-select-sm" id="filtroOrden" onchange="aplicarFiltros()">
+              <option value="default">Por defecto</option>
+              <option value="precio-asc">Precio: menor a mayor</option>
+              <option value="precio-desc">Precio: mayor a menor</option>
+              <option value="nombre-asc">Nombre A-Z</option>
+            </select>
+          </div>
+
+          <button class="btn btn-tienda w-100 mt-2" onclick="limpiarFiltros()">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar filtros
+          </button>
+        </div>
+      </aside>
+
+      <!-- PRODUCTOS -->
+      <div class="col-lg-9 col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="productos-count" id="productosCount">Mostrando todos los productos</span>
+        </div>
+
+        <!-- Grid de productos -->
+        <div class="row g-3" id="productosGrid">
+          <!-- Los productos se renderizan con JS -->
+        </div>
+
+        <!-- Sin resultados -->
+        <div id="sinResultados" class="text-center py-5 d-none">
+          <i class="bi bi-search" style="font-size: 3rem; color:#ccc;"></i>
+          <p class="mt-3 text-muted">No se encontraron productos con esos filtros.</p>
+          <button class="btn btn-tienda" onclick="limpiarFiltros()">Ver todos los productos</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+    <div id="cartToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMsg">¡Producto agregado al carrito!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer-principal">
+    <p>&copy; 2024 Tienda De Ropa. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ======= DATOS DE PRODUCTOS =======
+    const productos = [
+      { id:1, nombre:"Polo Clásico Blanco", categoria:"polos", estilo:"clasico", precio:59.90, imagen:"/Imagenes/Polo.png", tallas:["S","M","L","XL"], desc:"Polo básico de algodón premium, ideal para el día a día." },
+      { id:2, nombre:"Polo Urbano Negro", categoria:"polos", estilo:"urbano", precio:64.90, imagen:"/Imagenes/Polo.png", tallas:["XS","S","M","L"], desc:"Polo de corte moderno con detalle en mangas." },
+      { id:3, nombre:"Polo Minimalista Gris", categoria:"polos", estilo:"minimalista", precio:54.90, imagen:"/Imagenes/Polo.png", tallas:["S","M","L","XL","XXL"], desc:"Simple y elegante, perfecto para cualquier combinación." },
+      { id:4, nombre:"Camisa Denim Azul", categoria:"camisas", estilo:"clasico", precio:89.90, imagen:"/Imagenes/Camisas.png", tallas:["M","L","XL"], desc:"Camisa de mezclilla con acabados premium." },
+      { id:5, nombre:"Camisa Urbana Oversize", categoria:"camisas", estilo:"urbano", precio:95.90, imagen:"/Imagenes/Camisas.png", tallas:["S","M","L"], desc:"Corte oversize inspirado en el streetwear." },
+      { id:6, nombre:"Camisa Lino Blanca", categoria:"camisas", estilo:"minimalista", precio:79.90, imagen:"/Imagenes/Camisas.png", tallas:["S","M","L","XL"], desc:"Ligera y fresca, ideal para el verano." },
+      { id:7, nombre:"Chaleco Urbano Gris", categoria:"chalecos", estilo:"urbano", precio:79.90, imagen:"/Imagenes/Chalecos.png", tallas:["M","L","XL"], desc:"Chaleco acolchado perfecto para el frío." },
+      { id:8, nombre:"Chaleco Clásico Beige", categoria:"chalecos", estilo:"clasico", precio:85.90, imagen:"/Imagenes/Chalecos.png", tallas:["S","M","L","XL"], desc:"Elegante y versátil para toda ocasión." },
+      { id:9, nombre:"Chaleco Slim Negro", categoria:"chalecos", estilo:"minimalista", precio:74.90, imagen:"/Imagenes/Chalecos.png", tallas:["XS","S","M","L"], desc:"Diseño slim que resalta la figura." },
+      { id:10, nombre:"Pantalón Chino Beige", categoria:"pantalones", estilo:"clasico", precio:99.90, imagen:"/Imagenes/Clasico.png", tallas:["S","M","L","XL"], desc:"Pantalón chino con tela de calidad superior." },
+      { id:11, nombre:"Pantalón Jogger Urbano", categoria:"pantalones", estilo:"urbano", precio:89.90, imagen:"/Imagenes/Urbano.png", tallas:["XS","S","M","L","XL"], desc:"Cómodo y estiloso para el día a día urbano." },
+      { id:12, nombre:"Accesorio Cinturón Cuero", categoria:"accesorios", estilo:"clasico", precio:49.90, imagen:"/Imagenes/Clasico.png", tallas:["S","M","L"], desc:"Cinturón de cuero genuino con hebilla dorada." },
+    ];
+
+    let tallasSeleccionadas = [];
+
+    // ======= CARRITO =======
+    function getCarrito() { return JSON.parse(localStorage.getItem('carrito') || '[]'); }
+    function saveCarrito(c) { localStorage.setItem('carrito', JSON.stringify(c)); }
+    function updateCartBadge() {
+      const total = getCarrito().reduce((s,i) => s + i.cantidad, 0);
+      const badge = document.getElementById('cartCount');
+      badge.textContent = total;
+      badge.style.display = total > 0 ? 'flex' : 'none';
+    }
+
+    function agregarAlCarrito(id) {
+      const prod = productos.find(p => p.id === id);
+      if (!prod) return;
+      const carrito = getCarrito();
+      const idx = carrito.findIndex(i => i.nombre === prod.nombre);
+      if (idx >= 0) carrito[idx].cantidad++;
+      else carrito.push({ nombre: prod.nombre, precio: prod.precio, imagen: prod.imagen, cantidad: 1 });
+      saveCarrito(carrito);
+      updateCartBadge();
+      document.getElementById('toastMsg').textContent = `"${prod.nombre}" agregado al carrito`;
+      new bootstrap.Toast(document.getElementById('cartToast')).show();
+    }
+
+    // ======= FILTROS =======
+    function toggleTodos(cb) {
+      if (cb.checked) {
+        document.querySelectorAll('.filtro-check input[type=checkbox]:not(#cat-todos)').forEach(c => c.checked = false);
+      }
+      aplicarFiltros();
+    }
+
+    function toggleTalla(btn) {
+      const t = btn.dataset.talla;
+      btn.classList.toggle('activa');
+      if (btn.classList.contains('activa')) tallasSeleccionadas.push(t);
+      else tallasSeleccionadas = tallasSeleccionadas.filter(x => x !== t);
+      aplicarFiltros();
+    }
+
+    function actualizarPrecio(val) {
+      document.getElementById('precioVal').textContent = `S/ ${val}`;
+      aplicarFiltros();
+    }
+
+    function filtrarPorBusqueda(e) {
+      e.preventDefault();
+      document.getElementById('filtroNombre').value = document.getElementById('searchBar').value;
+      aplicarFiltros();
+    }
+
+    function aplicarFiltros() {
+      const nombre = document.getElementById('filtroNombre').value.toLowerCase();
+      const estilo = document.getElementById('filtroEstilo').value;
+      const precio = parseFloat(document.getElementById('filtroPrecio').value);
+      const orden = document.getElementById('filtroOrden').value;
+
+      const categoriasChecked = [...document.querySelectorAll('.filtro-check input[type=checkbox]:checked:not(#cat-todos)')]
+        .map(c => c.value);
+      const todosMarcado = document.getElementById('cat-todos').checked;
+
+      let resultado = productos.filter(p => {
+        const matchNombre = !nombre || p.nombre.toLowerCase().includes(nombre);
+        const matchCat = todosMarcado || categoriasChecked.length === 0 || categoriasChecked.includes(p.categoria);
+        const matchEstilo = !estilo || p.estilo === estilo;
+        const matchPrecio = p.precio <= precio;
+        const matchTalla = tallasSeleccionadas.length === 0 || tallasSeleccionadas.some(t => p.tallas.includes(t));
+        return matchNombre && matchCat && matchEstilo && matchPrecio && matchTalla;
+      });
+
+      // Ordenar
+      if (orden === 'precio-asc') resultado.sort((a,b) => a.precio - b.precio);
+      else if (orden === 'precio-desc') resultado.sort((a,b) => b.precio - a.precio);
+      else if (orden === 'nombre-asc') resultado.sort((a,b) => a.nombre.localeCompare(b.nombre));
+
+      renderProductos(resultado);
+    }
+
+    function renderProductos(lista) {
+      const grid = document.getElementById('productosGrid');
+      const sinRes = document.getElementById('sinResultados');
+      const count = document.getElementById('productosCount');
+
+      if (lista.length === 0) {
+        grid.innerHTML = '';
+        sinRes.classList.remove('d-none');
+        count.textContent = 'Sin resultados';
+        return;
+      }
+
+      sinRes.classList.add('d-none');
+      count.textContent = `Mostrando ${lista.length} producto${lista.length !== 1 ? 's' : ''}`;
+
+      grid.innerHTML = lista.map(p => `
+        <div class="col-lg-4 col-md-6">
+          <div class="card producto-card h-100">
+            <div class="badge-categoria">${p.estilo.charAt(0).toUpperCase() + p.estilo.slice(1)}</div>
+            <img src="${p.imagen}" class="card-img-top producto-img" alt="${p.nombre}">
+            <div class="card-body text-center d-flex flex-column">
+              <h6 class="producto-nombre">${p.nombre}</h6>
+              <p class="producto-desc flex-grow-1">${p.desc}</p>
+              <div class="tallas-mini mb-2">
+                ${p.tallas.map(t => `<span class="talla-tag">${t}</span>`).join('')}
+              </div>
+              <p class="producto-precio mb-2">S/ ${p.precio.toFixed(2)}</p>
+              <button class="btn btn-tienda mt-auto" onclick="agregarAlCarrito(${p.id})">
+                <i class="bi bi-cart-plus me-1"></i> Agregar al carrito
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function limpiarFiltros() {
+      document.getElementById('filtroNombre').value = '';
+      document.getElementById('filtroEstilo').value = '';
+      document.getElementById('filtroPrecio').value = 200;
+      document.getElementById('precioVal').textContent = 'S/ 200';
+      document.getElementById('filtroOrden').value = 'default';
+      document.getElementById('cat-todos').checked = true;
+      document.querySelectorAll('.filtro-check input[type=checkbox]:not(#cat-todos)').forEach(c => c.checked = false);
+      document.querySelectorAll('.talla-btn').forEach(b => b.classList.remove('activa'));
+      tallasSeleccionadas = [];
+      renderProductos(productos);
+    }
+
+    function irContacto(e) {
+      e.preventDefault();
+      window.location.href = '/#contacto';
+    }
+
+    // ---- Leer parámetros URL al cargar ----
+    function leerUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const cat = params.get('categoria');
+      const buscar = params.get('buscar');
+      if (cat) {
+        document.getElementById('cat-todos').checked = false;
+        const cb = document.getElementById(`cat-${cat}`);
+        if (cb) cb.checked = true;
+      }
+      if (buscar) {
+        document.getElementById('filtroNombre').value = buscar;
+        document.getElementById('searchBar').value = buscar;
+      }
+      aplicarFiltros();
+    }
+
+    updateCartBadge();
+    leerUrlParams();
+  </script>
+</body>
+</html>

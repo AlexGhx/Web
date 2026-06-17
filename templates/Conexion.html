@@ -3,33 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/static/Css/Login.css">
-    <title>Registro</title>
+    <title>Mi Cuenta - Moda Total</title>
+    <style>
+      .Carta_Registro { min-height: 100vh; padding: 40px 15px; }
+      .perfil-card {
+        width: 360px;
+        background-color: rgba(0,0,0,0.72);
+        border-radius: 16px;
+        padding: 30px 28px;
+        color: white;
+        box-shadow: 0 10px 35px rgba(0,0,0,0.4);
+      }
+      .avatar-circle {
+        width: 80px; height: 80px;
+        background: rgba(216,155,91,0.25);
+        border: 2px solid rgba(216,155,91,0.5);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 2.2rem; color: #D89B5B;
+      }
+      .nombre-usuario {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem; color: #D89B5B; margin-bottom: 4px;
+      }
+      .badge-rol {
+        background: rgba(216,155,91,0.25);
+        color: #D89B5B; border: 1px solid rgba(216,155,91,0.4);
+        border-radius: 20px; padding: 2px 12px; font-size: 0.75rem;
+        display: inline-block; margin-bottom: 20px;
+      }
+      .info-row {
+        background: rgba(255,255,255,0.07);
+        border-radius: 8px; padding: 10px 14px;
+        margin-bottom: 10px; text-align: left;
+        font-size: 0.85rem; color: rgba(255,255,255,0.7);
+      }
+      .info-row i { color: #D89B5B; margin-right: 8px; }
+      .btn-accion {
+        background-color: #D89B5B; border: none; color: white;
+        border-radius: 8px; padding: 9px 0; width: 100%;
+        font-size: 0.9rem; font-weight: 500; margin-bottom: 10px;
+        transition: background 0.2s; display: block; text-decoration: none; text-align: center;
+      }
+      .btn-accion:hover { background-color: #b87a3d; color: white; }
+      .btn-accion.outline {
+        background: transparent; border: 1px solid rgba(255,255,255,0.2);
+        color: rgba(255,255,255,0.6);
+      }
+      .btn-accion.outline:hover { background: rgba(255,255,255,0.08); color: white; }
+      .btn-accion.danger { background-color: rgba(220,53,69,0.7); }
+      .btn-accion.danger:hover { background-color: rgba(220,53,69,1); }
+      .divider { border-color: rgba(255,255,255,0.12); margin: 18px 0; }
+    </style>
 </head>
 <body>
-  <div class="container text-center Carta_Registro">
-    <div class="row align-items-center">
-      <div class="col">
-        <div class="card"> 
-          <i class="bi bi-person-circle" style="font-size: 65px ; color: rgba(236, 181, 99, 0.397);"></i>
-          <hr style="margin: 2px;">
-          <div class="card-body">
-            <form action="/registrar" method="POST">
-              <p class="form-label">¡Bienvenido, {{usuario}}!</p>
-              <input type="email" name="correo" class="form-control" placeholder="example@example.com" required>
-              <p class="form-label">Contraseña</p>
-              <input type="password" name="password" class="form-control" placeholder="example123" required>
-              <button class="btn btn-primary mt-3">
-                Inicia Sesion
-              </button>
-            </form>
-          </div>
-        </div>
+  <div class="container text-center Carta_Registro d-flex align-items-center justify-content-center">
+    <div class="perfil-card">
+
+      <div class="avatar-circle">
+        <i class="bi bi-person-fill"></i>
       </div>
+
+      <p class="nombre-usuario">{{ usuario }}</p>
+      <span class="badge-rol"><i class="bi bi-star-fill me-1"></i>Cliente</span>
+
+      <div class="info-row">
+        <i class="bi bi-check-circle-fill"></i>Sesión activa
+      </div>
+      <div class="info-row">
+        <i class="bi bi-bag-heart-fill"></i>Mis pedidos — próximamente
+      </div>
+      <div class="info-row">
+        <i class="bi bi-heart-fill"></i>Lista de deseos — próximamente
+      </div>
+
+      <hr class="divider">
+
+      <a href="/tienda" class="btn-accion"><i class="bi bi-shop me-2"></i>Ir a la Tienda</a>
+      <a href="/" class="btn-accion outline"><i class="bi bi-house me-2"></i>Ir al Inicio</a>
+      <a href="/inicio" class="btn-accion outline"><i class="bi bi-arrow-left me-2"></i>Volver al Login</a>
+      <a href="/admin" class="btn-accion outline"><i class="bi bi-arrow-left me-2"></i>Panel</a>
+
+      <hr class="divider">
+
+      <a href="/cerrar_sesion" class="btn-accion danger"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

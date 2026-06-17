@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/Css/Estilo.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Carrito - Tienda De Ropa</title>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg barra_navegacion sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Tienda De Ropa</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav barra_texto me-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="/tienda">Tienda</a></li>
+          <li class="nav-item"><a class="nav-link" href="/#contacto">Contáctanos</a></li>
+        </ul>
+      </div>
+      <a href="/carrito" class="nav-icon-link me-2 position-relative active-nav">
+        <i class="bi bi-cart3 nav-icon"></i>
+        <span class="cart-badge" id="cartCount">0</span>
+      </a>
+      <a href="/login" class="nav-icon-link"><i class="bi bi-person nav-icon"></i></a>
+    </div>
+  </nav>
+
+  <!-- ENCABEZADO -->
+  <div class="tienda-header">
+    <h1 class="tienda-titulo"><i class="bi bi-cart3 me-2"></i>Mi Carrito</h1>
+    <p class="tienda-sub">Revisa tus productos antes de comprar</p>
+  </div>
+
+  <div class="container my-5">
+    <div class="row g-4">
+
+      <!-- Lista del carrito -->
+      <div class="col-lg-8">
+        <div id="carritoVacio" class="text-center py-5 d-none">
+          <i class="bi bi-cart-x" style="font-size:4rem; color:#ccc;"></i>
+          <h4 class="mt-3 text-muted">Tu carrito está vacío</h4>
+          <p class="text-muted">¡Agrega productos desde la tienda!</p>
+          <a href="/tienda" class="btn btn-tienda mt-2">Ir a la Tienda</a>
+        </div>
+        <div id="carritoItems"></div>
+      </div>
+
+      <!-- Resumen -->
+      <div class="col-lg-4">
+        <div class="resumen-card" id="resumenCard">
+          <h5 class="resumen-titulo">Resumen del pedido</h5>
+          <hr>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal</span>
+            <span id="subtotalVal">S/ 0.00</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Envío</span>
+            <span id="envioVal">S/ 0.00</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2 text-muted" style="font-size:12px;">
+            <span>Envío gratis en compras mayores a S/ 100</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
+            <span>Total</span>
+            <span id="totalVal">S/ 0.00</span>
+          </div>
+          <button class="btn btn-tienda w-100 mb-2" onclick="procederPago()">
+            <i class="bi bi-credit-card me-2"></i>Proceder al pago
+          </button>
+          <a href="/tienda" class="btn btn-outline-secondary w-100">
+            <i class="bi bi-arrow-left me-1"></i>Seguir comprando
+          </a>
+
+          <!-- Cupón -->
+          <hr>
+          <div class="input-group mt-2">
+            <input type="text" class="form-control" id="cuponInput" placeholder="Código de cupón">
+            <button class="btn btn-outline-secondary" onclick="aplicarCupon()">Aplicar</button>
+          </div>
+          <p class="text-muted mt-1" style="font-size:11px;" id="cuponMsg"></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal de pago -->
+  <div class="modal fade" id="modalPago" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header" style="background: var(--color-nav); color:white;">
+          <h5 class="modal-title"><i class="bi bi-credit-card me-2"></i>Confirmar Pedido</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="resumenModal"></div>
+          <hr>
+          <div class="alert alert-success">
+            <i class="bi bi-check-circle me-2"></i>
+            Pedido confirmado. ¡Gracias por tu compra!
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-tienda" onclick="finalizarCompra()">
+            <i class="bi bi-bag-check me-1"></i>Finalizar compra
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer-principal">
+    <p>&copy; 2024 Tienda De Ropa. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function getCarrito() { return JSON.parse(localStorage.getItem('carrito') || '[]'); }
+    function saveCarrito(c) { localStorage.setItem('carrito', JSON.stringify(c)); }
+
+    function updateCartBadge() {
+      const total = getCarrito().reduce((s,i) => s + i.cantidad, 0);
+      const badge = document.getElementById('cartCount');
+      badge.textContent = total;
+      badge.style.display = total > 0 ? 'flex' : 'none';
+    }
+
+    function renderCarrito() {
+      const carrito = getCarrito();
+      const container = document.getElementById('carritoItems');
+      const vacio = document.getElementById('carritoVacio');
+      const resumen = document.getElementById('resumenCard');
+
+      updateCartBadge();
+
+      if (carrito.length === 0) {
+        vacio.classList.remove('d-none');
+        container.innerHTML = '';
+        resumen.style.opacity = '0.5';
+        resumen.style.pointerEvents = 'none';
+        document.getElementById('subtotalVal').textContent = 'S/ 0.00';
+        document.getElementById('envioVal').textContent = 'S/ 0.00';
+        document.getElementById('totalVal').textContent = 'S/ 0.00';
+        return;
+      }
+
+      vacio.classList.add('d-none');
+      resumen.style.opacity = '1';
+      resumen.style.pointerEvents = 'auto';
+
+      container.innerHTML = carrito.map((item, idx) => `
+        <div class="carrito-item mb-3">
+          <div class="row align-items-center">
+            <div class="col-3 col-md-2">
+              <img src="${item.imagen || '/Imagenes/Polo.png'}" alt="${item.nombre}" class="carrito-img">
+            </div>
+            <div class="col-5 col-md-6">
+              <h6 class="carrito-nombre">${item.nombre}</h6>
+              <p class="carrito-precio-unit">S/ ${item.precio.toFixed(2)} c/u</p>
+            </div>
+            <div class="col-4 col-md-4">
+              <div class="d-flex align-items-center justify-content-end gap-2">
+                <div class="qty-ctrl">
+                  <button onclick="cambiarCantidad(${idx}, -1)"><i class="bi bi-dash"></i></button>
+                  <span>${item.cantidad}</span>
+                  <button onclick="cambiarCantidad(${idx}, 1)"><i class="bi bi-plus"></i></button>
+                </div>
+                <button class="btn-eliminar" onclick="eliminarItem(${idx})" title="Eliminar">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
+              <p class="carrito-subtotal text-end mt-1">S/ ${(item.precio * item.cantidad).toFixed(2)}</p>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      calcularTotales(carrito);
+    }
+
+    function calcularTotales(carrito) {
+      const subtotal = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+      const envio = subtotal >= 100 ? 0 : 15;
+      const total = subtotal + envio;
+      document.getElementById('subtotalVal').textContent = `S/ ${subtotal.toFixed(2)}`;
+      document.getElementById('envioVal').textContent = envio === 0 ? 'Gratis' : `S/ ${envio.toFixed(2)}`;
+      document.getElementById('totalVal').textContent = `S/ ${total.toFixed(2)}`;
+    }
+
+    function cambiarCantidad(idx, delta) {
+      const carrito = getCarrito();
+      carrito[idx].cantidad += delta;
+      if (carrito[idx].cantidad <= 0) carrito.splice(idx, 1);
+      saveCarrito(carrito);
+      renderCarrito();
+    }
+
+    function eliminarItem(idx) {
+      const carrito = getCarrito();
+      carrito.splice(idx, 1);
+      saveCarrito(carrito);
+      renderCarrito();
+    }
+
+    function aplicarCupon() {
+      const cod = document.getElementById('cuponInput').value.trim().toUpperCase();
+      const msg = document.getElementById('cuponMsg');
+      if (cod === 'TIENDA10') msg.textContent = '✅ Cupón aplicado: 10% de descuento';
+      else if (cod === 'ENVIO') msg.textContent = '✅ Cupón aplicado: envío gratis';
+      else msg.textContent = '❌ Cupón no válido';
+    }
+
+    function procederPago() {
+      const carrito = getCarrito();
+      const subtotal = carrito.reduce((s,i) => s + i.precio * i.cantidad, 0);
+      const envio = subtotal >= 100 ? 0 : 15;
+      document.getElementById('resumenModal').innerHTML = `
+        <h6>Productos:</h6>
+        ${carrito.map(i => `<div class="d-flex justify-content-between"><span>${i.nombre} x${i.cantidad}</span><span>S/ ${(i.precio*i.cantidad).toFixed(2)}</span></div>`).join('')}
+        <hr>
+        <div class="d-flex justify-content-between fw-bold"><span>Total a pagar:</span><span>S/ ${(subtotal+envio).toFixed(2)}</span></div>
+      `;
+      new bootstrap.Modal(document.getElementById('modalPago')).show();
+    }
+
+    function finalizarCompra() {
+      localStorage.removeItem('carrito');
+      bootstrap.Modal.getInstance(document.getElementById('modalPago')).hide();
+      renderCarrito();
+    }
+
+    renderCarrito();
+  </script>
+</body>
+</html>
