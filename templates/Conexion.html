@@ -37,6 +37,10 @@
         border-radius: 20px; padding: 2px 12px; font-size: 0.75rem;
         display: inline-block; margin-bottom: 20px;
       }
+      .badge-rol.admin-rol {
+        background: rgba(231,74,59,0.2);
+        color: #e74a3b; border-color: rgba(231,74,59,0.4);
+      }
       .info-row {
         background: rgba(255,255,255,0.07);
         border-radius: 8px; padding: 10px 14px;
@@ -58,6 +62,11 @@
       .btn-accion.outline:hover { background: rgba(255,255,255,0.08); color: white; }
       .btn-accion.danger { background-color: rgba(220,53,69,0.7); }
       .btn-accion.danger:hover { background-color: rgba(220,53,69,1); }
+      .btn-accion.admin-btn {
+        background: rgba(231,74,59,0.2); border: 1px solid rgba(231,74,59,0.4);
+        color: #e74a3b;
+      }
+      .btn-accion.admin-btn:hover { background: rgba(231,74,59,0.4); color: white; }
       .divider { border-color: rgba(255,255,255,0.12); margin: 18px 0; }
     </style>
 </head>
@@ -66,11 +75,20 @@
     <div class="perfil-card">
 
       <div class="avatar-circle">
-        <i class="bi bi-person-fill"></i>
+        {% if usuario == 'admin' %}
+          <i class="bi bi-person-gear"></i>
+        {% else %}
+          <i class="bi bi-person-fill"></i>
+        {% endif %}
       </div>
 
       <p class="nombre-usuario">{{ usuario }}</p>
-      <span class="badge-rol"><i class="bi bi-star-fill me-1"></i>Cliente</span>
+
+      {% if usuario == 'admin' %}
+        <span class="badge-rol admin-rol"><i class="bi bi-shield-fill me-1"></i>Administrador</span>
+      {% else %}
+        <span class="badge-rol"><i class="bi bi-star-fill me-1"></i>Cliente</span>
+      {% endif %}
 
       <div class="info-row">
         <i class="bi bi-check-circle-fill"></i>Sesión activa
@@ -86,8 +104,10 @@
 
       <a href="/tienda" class="btn-accion"><i class="bi bi-shop me-2"></i>Ir a la Tienda</a>
       <a href="/" class="btn-accion outline"><i class="bi bi-house me-2"></i>Ir al Inicio</a>
-      <a href="/inicio" class="btn-accion outline"><i class="bi bi-arrow-left me-2"></i>Volver al Login</a>
-      <a href="/admin" class="btn-accion outline"><i class="bi bi-arrow-left me-2"></i>Panel</a>
+
+      {% if usuario == 'admin' %}
+      <a href="/admin" class="btn-accion admin-btn"><i class="bi bi-shield-lock me-2"></i>Panel de Administración</a>
+      {% endif %}
 
       <hr class="divider">
 

@@ -7,14 +7,83 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
-    <title>Tienda De Ropa</title>
+    <title>Moda Total</title>
+    <style>
+      /* Estilos catálogo de estilos */
+      .estilos-section {
+        background: #faf7f4;
+        padding: 60px 0 70px;
+      }
+      .estilos-section .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: #2d2217;
+        margin-bottom: 10px;
+      }
+      .estilos-subtitle {
+        color: #6c584c;
+        font-size: 0.95rem;
+        margin-bottom: 40px;
+      }
+      .estilo-card {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(100,60,20,0.15);
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+      }
+      .estilo-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 40px rgba(100,60,20,0.25);
+      }
+      .estilo-card img {
+        width: 100%;
+        height: 340px;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.4s;
+      }
+      .estilo-card:hover img { transform: scale(1.05); }
+      .estilo-overlay {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        background: linear-gradient(to top, rgba(20,10,5,0.85) 0%, transparent 100%);
+        padding: 30px 20px 22px;
+        color: white;
+      }
+      .estilo-overlay h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        margin-bottom: 4px;
+      }
+      .estilo-overlay p {
+        font-size: 0.82rem;
+        opacity: 0.8;
+        margin: 0;
+      }
+      .estilo-badge {
+        position: absolute;
+        top: 14px; left: 14px;
+        background: #D89B5B;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+    </style>
 </head>
 <body>
 
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg barra_navegacion sticky-top">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">Tienda De Ropa</a>
+      <a class="navbar-brand" href="/">Moda Total</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -32,7 +101,7 @@
         </ul>
       </div>
 
-      <!-- Barra de búsqueda funcional -->
+      <!-- Barra de búsqueda -->
       <form class="d-flex barra_busqueda me-2" role="search" id="formBusqueda" onsubmit="buscarProducto(event)">
         <input class="form-control me-2" type="search" id="inputBusqueda" placeholder="Buscar productos..." aria-label="Buscar"/>
         <button class="btn btn-buscar" type="submit">
@@ -55,15 +124,15 @@
 
   <!-- HERO IMAGE -->
   <div class="hero-section position-relative">
-    <img src="/Imagenes/Pagina_Principal.png" alt="Tienda De Ropa" class="hero-img">
+    <img src="/Imagenes/Pagina_Principal.png" alt="Moda Total" class="hero-img">
     <div class="hero-overlay">
-      <h1 class="hero-titulo">¡Bienvenidos a nuestra Tienda de Ropa!</h1>
+      <h1 class="hero-titulo">¡Bienvenidos a Moda Total!</h1>
       <p class="hero-sub">Descubre las últimas tendencias en moda</p>
       <a href="/tienda" class="btn btn-hero">Ver Colección</a>
     </div>
   </div>
 
-  <!-- PRODUCTOS DESTACADOS - enlazados a la tienda con categoría -->
+  <!-- PRODUCTOS DESTACADOS -->
   <section class="container my-5">
     <h2 class="section-title text-center mb-4">Productos Destacados</h2>
     <div class="row justify-content-center g-4">
@@ -125,50 +194,73 @@
     </div>
   </section>
 
-  <!-- CAROUSEL DE ESTILOS -->
-  <section class="carousel-section">
-    <h2 class="section-title text-center mb-3">Nuestros Estilos</h2>
-    <div id="carouselEstilos" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselEstilos" data-bs-slide-to="0" class="active" aria-current="true"></button>
-        <button type="button" data-bs-target="#carouselEstilos" data-bs-slide-to="1"></button>
-        <button type="button" data-bs-target="#carouselEstilos" data-bs-slide-to="2"></button>
+  <!-- NUESTROS ESTILOS - Centrado, con tarjetas grandes y diferentes por catálogo -->
+  <section class="estilos-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title">Nuestros Estilos</h2>
+        <p class="estilos-subtitle">Encuentra el look que mejor te representa</p>
+        <div style="width:60px;height:3px;background:#D89B5B;margin:0 auto;border-radius:2px"></div>
       </div>
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <a href="/tienda?categoria=clasico">
-            <img src="/Imagenes/Clasico.png" class="d-block w-100 carousel-img" alt="Estilo Clásico">
-            <div class="carousel-caption">
-              <h3 class="carousel-label">Estilo Clásico</h3>
-              <p>Elegancia atemporal</p>
+
+      <!-- Fila principal: 2 estilos grandes -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-6">
+          <a href="/tienda?categoria=clasico" class="estilo-card">
+            <span class="estilo-badge">Clásico</span>
+            <img src="/Imagenes/Clasico.png" alt="Estilo Clásico" style="height:380px">
+            <div class="estilo-overlay">
+              <h3>Estilo Clásico</h3>
+              <p>Elegancia atemporal que nunca pasa de moda</p>
             </div>
           </a>
         </div>
-        <div class="carousel-item">
-          <a href="/tienda?categoria=urbano">
-            <img src="/Imagenes/Urbano.png" class="d-block w-100 carousel-img" alt="Estilo Urbano">
-            <div class="carousel-caption">
-              <h3 class="carousel-label">Estilo Urbano</h3>
-              <p>Moda para la ciudad</p>
-            </div>
-          </a>
-        </div>
-        <div class="carousel-item">
-          <a href="/tienda?categoria=minimalista">
-            <img src="/Imagenes/Minimalista.png" class="d-block w-100 carousel-img" alt="Estilo Minimalista">
-            <div class="carousel-caption">
-              <h3 class="carousel-label">Estilo Minimalista</h3>
-              <p>Menos es más</p>
+        <div class="col-md-6">
+          <a href="/tienda?categoria=urbano" class="estilo-card">
+            <span class="estilo-badge" style="background:#7a4a1e">Urbano</span>
+            <img src="/Imagenes/Urbano.png" alt="Estilo Urbano" style="height:380px">
+            <div class="estilo-overlay">
+              <h3>Estilo Urbano</h3>
+              <p>Moda moderna para la ciudad de hoy</p>
             </div>
           </a>
         </div>
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#carouselEstilos" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#carouselEstilos" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-      </button>
+
+      <!-- Fila secundaria: 3 estilos menores -->
+      <div class="row g-4">
+        <div class="col-md-4">
+          <a href="/tienda?categoria=minimalista" class="estilo-card">
+            <span class="estilo-badge" style="background:#5c6b5c">Minimalista</span>
+            <img src="/Imagenes/Minimalista.png" alt="Estilo Minimalista" style="height:260px">
+            <div class="estilo-overlay">
+              <h3>Minimalista</h3>
+              <p>Menos es más — pureza y simplicidad</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="/tienda?categoria=polos" class="estilo-card">
+            <span class="estilo-badge" style="background:#3a6b7a">Polos</span>
+            <img src="/Imagenes/Polo.png" alt="Colección Polos" style="height:260px">
+            <div class="estilo-overlay">
+              <h3>Colección Polos</h3>
+              <p>Comodidad y estilo en cada prenda</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="/tienda?categoria=camisas" class="estilo-card">
+            <span class="estilo-badge" style="background:#6b3a5c">Camisas</span>
+            <img src="/Imagenes/Camisas.png" alt="Colección Camisas" style="height:260px">
+            <div class="estilo-overlay">
+              <h3>Colección Camisas</h3>
+              <p>Para cada ocasión y estilo de vida</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -216,7 +308,7 @@
             </div>
             <div class="info-item">
               <i class="bi bi-envelope-fill"></i>
-              <span>info@tiendaropa.com</span>
+              <span>info@modatotal.com</span>
             </div>
             <div class="info-item">
               <i class="bi bi-clock-fill"></i>
@@ -230,7 +322,7 @@
 
   <!-- FOOTER -->
   <footer class="footer-principal">
-    <p>&copy; 2024 Tienda De Ropa. Todos los derechos reservados.</p>
+    <p>&copy; 2024 Moda Total. Todos los derechos reservados.</p>
   </footer>
 
   <!-- TOAST de carrito -->
@@ -247,7 +339,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ---- Carrito (localStorage) ----
     function getCarrito() {
       return JSON.parse(localStorage.getItem('carrito') || '[]');
     }
@@ -273,14 +364,12 @@
       new bootstrap.Toast(document.getElementById('cartToast')).show();
     }
 
-    // ---- Búsqueda ----
     function buscarProducto(e) {
       e.preventDefault();
       const q = document.getElementById('inputBusqueda').value.trim();
       if (q) window.location.href = `/tienda?buscar=${encodeURIComponent(q)}`;
     }
 
-    // ---- Scroll a contacto ----
     function scrollToContact(e) {
       e.preventDefault();
       document.getElementById('contacto').scrollIntoView({ behavior: 'smooth' });

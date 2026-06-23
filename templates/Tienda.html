@@ -183,20 +183,20 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ======= DATOS DE PRODUCTOS =======
+    // ======= DATOS DE PRODUCTOS (desde la base de datos vía Flask) =======
     const productos = [
-      { id:1, nombre:"Polo Clásico Blanco", categoria:"polos", estilo:"clasico", precio:59.90, imagen:"/Imagenes/Polo.png", tallas:["S","M","L","XL"], desc:"Polo básico de algodón premium, ideal para el día a día." },
-      { id:2, nombre:"Polo Urbano Negro", categoria:"polos", estilo:"urbano", precio:64.90, imagen:"/Imagenes/Polo.png", tallas:["XS","S","M","L"], desc:"Polo de corte moderno con detalle en mangas." },
-      { id:3, nombre:"Polo Minimalista Gris", categoria:"polos", estilo:"minimalista", precio:54.90, imagen:"/Imagenes/Polo.png", tallas:["S","M","L","XL","XXL"], desc:"Simple y elegante, perfecto para cualquier combinación." },
-      { id:4, nombre:"Camisa Denim Azul", categoria:"camisas", estilo:"clasico", precio:89.90, imagen:"/Imagenes/Camisas.png", tallas:["M","L","XL"], desc:"Camisa de mezclilla con acabados premium." },
-      { id:5, nombre:"Camisa Urbana Oversize", categoria:"camisas", estilo:"urbano", precio:95.90, imagen:"/Imagenes/Camisas.png", tallas:["S","M","L"], desc:"Corte oversize inspirado en el streetwear." },
-      { id:6, nombre:"Camisa Lino Blanca", categoria:"camisas", estilo:"minimalista", precio:79.90, imagen:"/Imagenes/Camisas.png", tallas:["S","M","L","XL"], desc:"Ligera y fresca, ideal para el verano." },
-      { id:7, nombre:"Chaleco Urbano Gris", categoria:"chalecos", estilo:"urbano", precio:79.90, imagen:"/Imagenes/Chalecos.png", tallas:["M","L","XL"], desc:"Chaleco acolchado perfecto para el frío." },
-      { id:8, nombre:"Chaleco Clásico Beige", categoria:"chalecos", estilo:"clasico", precio:85.90, imagen:"/Imagenes/Chalecos.png", tallas:["S","M","L","XL"], desc:"Elegante y versátil para toda ocasión." },
-      { id:9, nombre:"Chaleco Slim Negro", categoria:"chalecos", estilo:"minimalista", precio:74.90, imagen:"/Imagenes/Chalecos.png", tallas:["XS","S","M","L"], desc:"Diseño slim que resalta la figura." },
-      { id:10, nombre:"Pantalón Chino Beige", categoria:"pantalones", estilo:"clasico", precio:99.90, imagen:"/Imagenes/Clasico.png", tallas:["S","M","L","XL"], desc:"Pantalón chino con tela de calidad superior." },
-      { id:11, nombre:"Pantalón Jogger Urbano", categoria:"pantalones", estilo:"urbano", precio:89.90, imagen:"/Imagenes/Urbano.png", tallas:["XS","S","M","L","XL"], desc:"Cómodo y estiloso para el día a día urbano." },
-      { id:12, nombre:"Accesorio Cinturón Cuero", categoria:"accesorios", estilo:"clasico", precio:49.90, imagen:"/Imagenes/Clasico.png", tallas:["S","M","L"], desc:"Cinturón de cuero genuino con hebilla dorada." },
+      {% for p in productos %}
+      {
+        id: {{ p['id'] }},
+        nombre: {{ p['nombre']|tojson }},
+        categoria: {{ p['categoria']|lower|tojson }},
+        estilo: {{ p['categoria']|lower|tojson }},
+        precio: {{ p['precio'] }},
+        imagen: {{ get_imagen_url(p['imagen'])|tojson }},
+        tallas: ["S","M","L","XL"],
+        desc: {{ (p['descripcion'] or '')|tojson }}
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
     ];
 
     let tallasSeleccionadas = [];

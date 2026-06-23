@@ -590,14 +590,18 @@
             </select>
           </div>
           <div class="col-12">
-            <label class="form-label-admin">Imagen del producto *</label>
-            <input type="file" name="imagen" class="form-ctrl" accept="image/*" required style="padding:6px 13px">
+            <label class="form-label-admin">Imagen del producto <span style="color:var(--text-muted);font-size:.78rem">(opcional)</span></label>
+            <input type="file" name="imagen" id="pImagen" class="form-ctrl" accept="image/*" style="padding:6px 13px" onchange="previewImagen(this)">
+            <div id="imgPreview" style="display:none;margin-top:10px">
+              <img id="imgPreviewSrc" src="" alt="Preview" style="max-height:140px;border-radius:10px;border:2px solid var(--border);object-fit:cover">
+              <span style="font-size:.78rem;color:var(--text-muted);display:block;margin-top:4px" id="imgPreviewName"></span>
+            </div>
           </div>
           <div class="col-12 d-flex justify-content-end gap-2">
             <button type="button" class="btn-sm-edit" style="padding:9px 20px;font-size:.83rem" onclick="resetForm()">
               <i class="bi bi-arrow-counterclockwise"></i> Limpiar
             </button>
-            <button type="submit" class="btn-admin">
+            <button type="submit" class="btn-admin" id="submitBtn">
               <i class="bi bi-cloud-upload"></i> Publicar Producto
             </button>
           </div>
@@ -655,7 +659,7 @@
                 <span class="{{ 'badge-active' if estado == 'Activo' else 'badge-inactive' }}">{{ estado }}</span>
               </td>
               <td>
-                <button class="btn-sm-edit"><i class="bi bi-pencil"></i> Editar</button>
+                <button class="btn-sm-edit" onclick="abrirEditar({{ p['id'] }}, '{{ p['nombre']|e }}', '{{ p['categoria']|e }}', '{{ p['descripcion']|e }}', {{ p['precio'] }}, {{ p.get('stock', 0) }}, '{{ p.get('estado','Activo') }}')"><i class="bi bi-pencil"></i> Editar</button>
                 <form action="/admin/eliminar/{{ p['id'] }}" method="POST" style="display:inline">
                   <button type="submit" class="btn-sm-del" onclick="return confirm('¿Eliminar este producto?')">
                     <i class="bi bi-trash3"></i> Eliminar
@@ -718,10 +722,18 @@
         </select>
       </div>
     </div>
-    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px">
-      <button class="btn-sm-edit" style="padding:8px 20px;font-size:.82rem" onclick="closeModal()">Cancelar</button>
-      <button class="btn-admin" onclick="saveEdit()"><i class="bi bi-check-lg"></i> Guardar Cambios</button>
-    </div>
+    <form id="editForm" action="/admin/editar/0" method="POST">
+      <input type="hidden" name="nombre" id="eNameHidden">
+      <input type="hidden" name="categoria" id="eCategoryHidden">
+      <input type="hidden" name="descripcion" id="eDescHidden">
+      <input type="hidden" name="precio" id="ePriceHidden">
+      <input type="hidden" name="stock" id="eStockHidden">
+      <input type="hidden" name="estado" id="eStatusHidden">
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px">
+        <button type="button" class="btn-sm-edit" style="padding:8px 20px;font-size:.82rem" onclick="closeModal()">Cancelar</button>
+        <button type="button" class="btn-admin" onclick="saveEdit()"><i class="bi bi-check-lg"></i> Guardar Cambios</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -748,8 +760,14 @@ function showSection(id, btn) {
   document.querySelectorAll('.nav-link-admin').forEach(n => n.classList.remove('active'));
   if (btn) btn.classList.add('active');
   currentSection = id;
-  if (id === 'productos') renderLocalTable(localProducts);
+  // productos section uses server-rendered Jinja table — don't override with JS
   if (id === 'dashboard') { renderDashRecent(); updateKpis(); }
+  if (id === 'productos') {
+    const tbody = document.getElementById('adminTableBody');
+    const count = tbody ? tbody.querySelectorAll('tr').length : 0;
+    const el = document.getElementById('totalCount');
+    if (el) el.textContent = `(${count} producto${count!==1?'s':''})`;
+  }
 }
 
 /* KPIs */
@@ -808,54 +826,84 @@ function renderLocalTable(data) {
 }
 
 function filterTable(q) {
-  const f = localProducts.filter(p =>
-    p.name.toLowerCase().includes(q.toLowerCase()) ||
-    p.category.toLowerCase().includes(q.toLowerCase())
-  );
-  renderLocalTable(f);
+  const tbody = document.getElementById('adminTableBody');
+  if (!tbody) return;
+  const rows = tbody.querySelectorAll('tr');
+  const lower = q.toLowerCase();
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(lower) ? '' : 'none';
+  });
 }
 
-/* EDIT */
-function openEdit(id) {
+/* EDIT — usa datos del servidor (Jinja), no localProducts */
+function abrirEditar(id, nombre, categoria, descripcion, precio, stock, estado) {
   editingId = id;
-  const p = localProducts.find(x => x.id === id);
-  document.getElementById('eName').value     = p.name;
-  document.getElementById('eCategory').value = p.category;
-  document.getElementById('eDesc').value     = p.desc;
-  document.getElementById('ePrice').value    = p.price;
-  document.getElementById('eStock').value    = p.stock;
-  document.getElementById('eStatus').value   = p.status;
+  document.getElementById('eName').value     = nombre;
+  document.getElementById('eCategory').value = categoria;
+  document.getElementById('eDesc').value     = descripcion;
+  document.getElementById('ePrice').value    = precio;
+  document.getElementById('eStock').value    = stock;
+  document.getElementById('eStatus').value   = estado;
   document.getElementById('editModal').classList.add('open');
 }
 function closeModal() { document.getElementById('editModal').classList.remove('open'); editingId = null; }
 function saveEdit() {
-  const emojis = { Polo:'👕', Camisa:'👔', Chaleco:'🧥', Clásico:'🎩', Urbano:'🧢', Minimalista:'🤍' };
-  const cat = document.getElementById('eCategory').value;
-  const i = localProducts.findIndex(p => p.id === editingId);
-  localProducts[i] = { ...localProducts[i],
-    name: document.getElementById('eName').value.trim(),
-    category: cat, desc: document.getElementById('eDesc').value.trim(),
-    price: parseFloat(document.getElementById('ePrice').value),
-    stock: parseInt(document.getElementById('eStock').value)||0,
-    status: document.getElementById('eStatus').value,
-    emoji: emojis[cat]||'📦'
-  };
-  closeModal(); renderLocalTable(localProducts); showToast('Producto actualizado ✓', 'success');
-  renderDashRecent(); updateKpis();
-}
-
-/* DELETE */
-function delLocal(id) {
-  if (!confirm('¿Eliminar este producto?')) return;
-  localProducts = localProducts.filter(p => p.id !== id);
-  renderLocalTable(localProducts); showToast('Producto eliminado', 'error');
-  renderDashRecent(); updateKpis();
+  const form = document.getElementById('editForm');
+  form.action = '/admin/editar/' + editingId;
+  document.getElementById('eNameHidden').value     = document.getElementById('eName').value.trim();
+  document.getElementById('eCategoryHidden').value = document.getElementById('eCategory').value;
+  document.getElementById('eDescHidden').value     = document.getElementById('eDesc').value.trim();
+  document.getElementById('ePriceHidden').value    = document.getElementById('ePrice').value;
+  document.getElementById('eStockHidden').value    = document.getElementById('eStock').value;
+  document.getElementById('eStatusHidden').value   = document.getElementById('eStatus').value;
+  form.submit();
 }
 
 /* FORM RESET */
+function previewImagen(input) {
+  const preview = document.getElementById('imgPreview');
+  const previewSrc = document.getElementById('imgPreviewSrc');
+  const previewName = document.getElementById('imgPreviewName');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      previewSrc.src = e.target.result;
+      previewName.textContent = input.files[0].name + ' (' + (input.files[0].size / 1024).toFixed(0) + ' KB)';
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+/* Feedback de envío del form */
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('addForm');
+  if (form) {
+    form.addEventListener('submit', function() {
+      const btn = document.getElementById('submitBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Publicando...';
+      }
+    });
+  }
+  // Scroll al mensaje de éxito si existe
+  const alerta = document.querySelector('.alerta-ok');
+  if (alerta) {
+    alerta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => showSection('productos', document.querySelectorAll('.nav-link-admin')[2]), 2000);
+  }
+});
+
 function resetForm() {
   document.getElementById('addForm').reset();
   document.getElementById('addAlerta').style.display = 'none';
+  document.getElementById('imgPreview').style.display = 'none';
+  const btn = document.getElementById('submitBtn');
+  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-cloud-upload"></i> Publicar Producto'; }
 }
 
 /* TOAST */
